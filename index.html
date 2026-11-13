@@ -723,6 +723,13 @@ window.addEventListener('load', () => {
       tr.append(mk('td', '', num(s.away[f], dp, unit)), mk('td', '', num(s.home[f], dp, unit)), mk('td', '', f === 'gp' ? '' : num(s.avg[f], dp, unit)));
       tb.append(tr);
     }
+    if (s.away.ortg != null && s.away.pace != null && s.home.ortg != null && s.home.pace != null) {
+      const pp = (x, k) => (k === 'pf' ? x.ortg : x.drtg) * x.pace / 100, av = (k) => (s.avg.ortg != null && s.avg.pace != null ? (k === 'pf' ? s.avg.ortg : s.avg.drtg) * s.avg.pace / 100 : null);
+      for (const [lab, k] of [['Points scored per game', 'pf'], ['Points allowed per game', 'pa']]) {
+        const tr = mk('tr'); tr.append(mk('td', '', lab), mk('td', '', num(pp(s.away, k), 1)), mk('td', '', num(pp(s.home, k), 1)), mk('td', '', num(av(k), 1)));
+        tb.append(tr);
+      }
+    }
     t.append(tb); wrap.append(t); return wrap;
   };
   // Plain-English reason for each pick: what style projects, and where the number comes from.
@@ -836,6 +843,20 @@ window.addEventListener('load', () => {
       return td(m, y.k === 'early' ? 'Too early' : y.k === 'even' ? 'Even' : 'No team stats', y.note, null);
     };
     line('Team scatter', styCell('sp'), styCell('tot'));
+    const ss = sty(r);
+    if (ss && ss.ok) {
+      const tr = mk('tr'), cellx = mk('td', 'cb-chk'); cellx.colSpan = 2;
+      const ppg = (x) => (x.ortg == null || x.pace == null ? null : { pf: x.ortg * x.pace / 100, pa: x.drtg * x.pace / 100 });
+      const one = (nm, x) => {
+        const p = ppg(x), d = mk('div');
+        if (p) d.append(mk('div', 'cb-chk-main', nm + ': scores ' + num(p.pf, 1) + ' · allows ' + num(p.pa, 1) + ' (net ' + sgn(Math.round((p.pf - p.pa) * 10) / 10) + ') per game'));
+        d.append(mk('div', 'cb-chk-sub', 'offense ' + num(x.ortg, 1) + ' · defense ' + num(x.drtg, 1) + ' · pace ' + num(x.pace, 1)));
+        return d;
+      };
+      const avgPpg = ss.avg.ortg != null && ss.avg.pace != null ? num(ss.avg.ortg * ss.avg.pace / 100, 1) : null;
+      cellx.append(one(r.away, ss.away), one(r.home, ss.home), mk('div', 'cb-chk-sub', 'Points per game against an average opponent: the rating times the team\'s own pace, divided by 100' + (ss.adj ? ', adjusted for opponents' : '') + '. A team that allows fewer than it scores is ahead on average. Division I average' + (avgPpg ? ': ' + avgPpg + ' scored and allowed' : '') + ' (offense ' + num(ss.avg.ortg, 1) + ', defense ' + num(ss.avg.drtg, 1) + ', pace ' + num(ss.avg.pace, 1) + ').'));
+      tr.append(mk('td', '', 'Points scored vs allowed'), cellx); tb.append(tr);
+    }
     t.append(tb); wrap.append(t); c.append(wrap);
     c.append(mk('div', 'cb-note', 'Green means the source points to the same side DraftKings is sharp on, red means the other side, and no color means no read. DraftKings is sharp on a side when the money is at least 10 points ahead of the tickets. Pinnacle is "toward" a side when its own line moved 0.5 or more toward it since its first reading. Circa uses the same 10-point rule and is thin data when its readings are all 0% or 100%. Team scatter is CBB Analytics\' opponent-adjusted offensive and defensive ratings and pace for the two teams.'));
     return c;
