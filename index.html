@@ -268,11 +268,6 @@ window.addEventListener('load', () => {
 
     <p class="cb-take"><b data-draw="v" data-source="summary" data-row="0" data-field="sharp_games">—</b> of <b data-draw="v" data-source="summary" data-row="0" data-field="games">—</b> games have a sharp pick today: <b data-draw="v" data-source="summary" data-row="0" data-field="sharp_picks">—</b> picks in all, <b data-draw="v" data-source="summary" data-row="0" data-field="all_three_picks">—</b> of them lining up on all three checks.</p>
   </header>
-
-  <div class="cb-tabs" role="tablist" aria-label="View">
-    <button class="cb-tab" role="tab" type="button" data-view="games" aria-selected="true">Games</button>
-    <button class="cb-tab" role="tab" type="button" data-view="parlay" aria-selected="false">My parlay</button>
-  </div>
   <div data-viewpane="games">
 
   <section class="cb-app" aria-label="Games and detail">
@@ -286,17 +281,6 @@ window.addEventListener('load', () => {
       <div class="cb-list" data-draw="list" data-source="games"></div>
     </aside>
     <section class="cb-main" data-draw="detail" data-source="games" aria-live="polite"></section>
-  </section>
-  </div>
-  <div data-viewpane="parlay" hidden>
-
-  <section class="cb-stylepane" aria-label="My parlay">
-    <div class="cb-card">
-      <h3>My parlay</h3>
-      <p class="cb-read">The four totals on the slip, tracked as the games are played. Scores come straight from ESPN and refresh about every 20 seconds while this tab is open. It is a tracker only: it shows where each leg stands right now and does not grade or rate the bet.</p>
-      <p class="cb-note">"Pace" is a simple projection: the points so far, scaled up to a full 40 minutes. It is rough early in a game and swings a lot after timeouts and free-throw runs.</p>
-    </div>
-    <div class="cb-card" data-draw="parlay" data-source="games" aria-live="polite"></div>
   </section>
   </div>
   <details class="cb-dd cb-top" id="results"><summary><span class="cb-sum-text"><span class="cb-sum-title">How we're doing</span><span class="cb-sum-sub">Graded results so far</span></span><span class="cb-sum-badges"><span class="cb-badge"><b data-draw="v" data-source="kp_acc" data-row="0" data-field="games">—</b> games graded</span><span class="cb-badge"><b data-draw="v" data-source="kp_acc" data-row="0" data-field="days">—</b> days</span></span></summary><div class="cb-dd-body">
@@ -1183,101 +1167,6 @@ window.addEventListener('load', () => {
       return tr;
     }));
   });
-  // ---- My parlay tab: the legs come from data/parlay.json (baked in when the page is built), scores from ESPN.
-  const PARLAY = {"date": "20261110", "label": "Tonight's slip, Nov 10", "legs": [{"id": "401920378", "away": "Virginia Tech", "home": "Iowa", "side": "Under", "line": 139.5, "price": -110}, {"id": "401909564", "away": "Duke", "home": "Michigan State", "side": "Under", "line": 147.5, "price": -140}, {"id": "401917520", "away": "Loyola Marymount", "home": "Troy", "side": "Under", "line": 143.5, "price": -110}, {"id": "401913101", "away": "Wyoming", "home": "North Carolina", "side": "Over", "line": 154.5, "price": -115}]};
-  const LIVE = { ev: {}, at: null, err: null, busy: false };
-  const ESPN_URL = 'https://site.api.espn.com/apis/site/v2/sports/basketball/mens-college-basketball/scoreboard?groups=50&limit=400&dates=' + PARLAY.date;
-  const fmtPrice = (n) => (n > 0 ? '+' + n : String(n));
-  // One shape for both sources: { state: 'pre'|'in'|'post', detail, period, clock (seconds), a: {name, score}, h: {name, score} }.
-  const normEv = (ev) => {
-    const comp = (ev.competitions || [])[0] || {}, cs = comp.competitors || [], s = ev.status || {}, t = s.type || {};
-    const side = (k) => { const c = cs.find((x) => x.homeAway === k); return c ? { name: (c.team || {}).shortDisplayName || (c.team || {}).displayName || k, score: Number(c.score) || 0 } : null; };
-    const a = side('away'), h = side('home');
-    return a && h ? { state: t.state, detail: t.shortDetail || '', period: s.period || 1, clock: s.clock != null ? s.clock : 0, a, h } : null;
-  };
-  const normDb = (d) => ({ state: d.state, detail: d.detail || '', period: Number(d.period) || 1, clock: Number(d.clock) || 0, a: { name: d.away, score: Number(d.away_score) || 0 }, h: { name: d.home, score: Number(d.home_score) || 0 } });
-  // Minutes played out of 40 (overtime adds 5 each).
-  const playedMin = (n) => { const p = n.period, left = n.clock / 60; return p <= 2 ? (p - 1) * 20 + (20 - left) : 40 + (p - 3) * 5 + (5 - left); };
-  const legState = (leg, n) => {
-    const under = leg.side === 'Under';
-    if (!n) return { tag: 'Waiting for scores', cls: '', note: 'No score found for this game yet.' };
-    const st = n.state, a = n.a, h = n.h;
-    const total = a.score + h.score, mins = playedMin(n), out = { a, h, total, st, clock: n.detail, pct: Math.max(0, Math.min(1, total / leg.line)) };
-    if (st === 'pre') return Object.assign(out, { tag: 'Not started', cls: '', note: 'Line ' + leg.line + ' · ' + out.clock });
-    if (st === 'in' && mins >= 8) out.proj = total / mins * 40;
-    const need = Math.ceil(leg.line) - total;   // lines end in .5, so Over needs this many more points
-    if (under) {
-      if (total >= leg.line) return Object.assign(out, { done: 'lost', tag: st === 'post' ? 'Missed' : 'Lost', cls: 'bad', note: 'Total ' + total + ' is over ' + leg.line + '. The Under cannot win now.' });
-      if (st === 'post') return Object.assign(out, { done: 'hit', tag: 'Hit', cls: 'ok', note: 'Final total ' + total + ', under ' + leg.line + '.' });
-      return Object.assign(out, { tag: 'Alive', cls: 'warn', note: (leg.line - total).toFixed(1).replace('.0', '') + ' points of room left before the line.' });
-    }
-    if (total > leg.line) return Object.assign(out, { done: 'hit', tag: 'Hit', cls: 'ok', note: 'Total ' + total + ' is over ' + leg.line + '. The Over has won.' });
-    if (st === 'post') return Object.assign(out, { done: 'lost', tag: 'Missed', cls: 'bad', note: 'Final total ' + total + ', under ' + leg.line + '.' });
-    return Object.assign(out, { tag: 'Alive', cls: 'warn', note: 'Needs ' + need + ' more point' + (need === 1 ? '' : 's') + ' to clear ' + leg.line + '.' });
-  };
-  dash.draw('parlay', (el) => {
-    const pick = (leg) => (LIVE.ev[leg.id] ? normEv(LIVE.ev[leg.id]) : LIVEDB.ev[leg.id] ? normDb(LIVEDB.ev[leg.id]) : null);
-    const states = PARLAY.legs.map((leg) => ({ leg, s: legState(leg, pick(leg)) }));
-    const n = states.length, hit = states.filter((x) => x.s.done === 'hit').length, lost = states.filter((x) => x.s.done === 'lost');
-    const live = states.filter((x) => x.s.st === 'in').length, pre = states.filter((x) => x.s.st === 'pre').length;
-    const head = mk('p', 'cb-sumline');
-    let msg;
-    if (!states.some((x) => x.s.a)) msg = LIVE.err ? 'No scores yet. This page could not reach ESPN directly (' + LIVE.err + '), and no saved scores have been pushed to it.' : 'Loading scores from ESPN…';
-    else if (lost.length) msg = 'This parlay is lost. ' + lost.length + ' leg' + (lost.length === 1 ? '' : 's') + ' can no longer win: ' + lost.map((x) => x.leg.away + ' @ ' + x.leg.home + ' ' + x.leg.side.toLowerCase()).join(', ') + '.';
-    else if (hit === n) msg = 'All ' + n + ' legs have won.';
-    else msg = 'Still alive. ' + hit + ' of ' + n + ' legs have won, ' + live + ' in play, ' + pre + ' not started.';
-    head.append(mk('b', '', msg));
-    const legs = states.map(({ leg, s }) => {
-      const box = mk('div', 'cb-leg');
-      const top = mk('div', 'cb-vrow'); top.append(mk('span', 'cb-vname', leg.side + ' ' + leg.line + ' (' + fmtPrice(leg.price) + ')'), mk('span', 'cb-pill ' + s.cls, s.tag));
-      const game = mk('div', 'cb-note', leg.away + ' @ ' + leg.home);
-      box.append(top, game);
-      if (s.a) {
-        box.append(mk('div', 'cb-legscore', s.a.name + ' ' + s.a.score + ' · ' + s.h.name + ' ' + s.h.score + '  (total ' + s.total + ')'));
-        const bar = mk('div', 'cb-legbar ' + (s.done === 'hit' ? 'ok' : s.done === 'lost' ? 'bad' : '')); const fill = mk('i'); fill.style.width = (s.pct * 100).toFixed(0) + '%'; bar.append(fill); bar.setAttribute('aria-hidden', 'true');
-        box.append(bar);
-        box.append(mk('div', 'cb-note', (s.st === 'pre' ? '' : s.clock + ' · ') + s.note));
-        if (s.proj != null && !s.done) box.append(mk('div', 'cb-note', 'Pace: about ' + Math.round(s.proj) + ' at the final buzzer if this rate holds (line ' + leg.line + ').'));
-      } else box.append(mk('div', 'cb-note', s.note));
-      return box;
-    });
-    const liveOk = LIVE.at && !LIVE.err, dbAt = Object.values(LIVEDB.ev).map((d) => d.at).filter(Boolean).sort().pop();
-    const foot = mk('div', 'cb-note', liveOk ? 'Live from ESPN, last updated ' + LIVE.at.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', second: '2-digit' }) + '.'
-      : dbAt ? 'Scores from ESPN, saved to this page at ' + new Date(dbAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) + '. This view cannot call ESPN itself, so the numbers can be a few minutes old. The live version is on the standalone site (#parlay).' : '');
-    el.replaceChildren(head, ...legs, foot);
-  });
-  const LIVEDB = { ev: {} };   // scores saved into this page's database (a fallback when the page cannot call ESPN itself)
-  (async () => {
-    try {
-      const db = window.claude && window.claude.use ? await window.claude.use('db') : null;
-      if (!db) return;
-      db.collection('live').onSnapshot((snap) => { snap.docs.forEach((d) => { const x = d.data(); if (x) LIVEDB.ev[d.id] = x; }); dash.draw('parlay'); }, () => {});
-    } catch (e) { /* no database on this view: the page works without it */ }
-  })();
-  let liveTimer = null;
-  const pullLive = async () => {
-    if (LIVE.busy) return; LIVE.busy = true;
-    try {
-      const r = await fetch(ESPN_URL, { cache: 'no-store' });
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      const j = await r.json(); const m = {};
-      (j.events || []).forEach((e) => { m[e.id] = e; });
-      LIVE.ev = m; LIVE.at = new Date(); LIVE.err = null;
-    } catch (e) { LIVE.err = String((e && e.message) || e); }
-    LIVE.busy = false; dash.draw('parlay');
-  };
-  const startLive = () => { if (liveTimer) return; pullLive(); liveTimer = setInterval(pullLive, 20000); };
-  const stopLive = () => { if (liveTimer) { clearInterval(liveTimer); liveTimer = null; } };
-
-  // ---- Tabs: Games and My parlay. Draws under a hidden pane do not run, so switching redraws.
-  const showView = (v) => {
-    qa('[data-view]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.view === v)));
-    qa('[data-viewpane]').forEach((p) => { p.hidden = p.dataset.viewpane !== v; });
-    ['list', 'detail', 'pinrec', 'parlay'].forEach((n) => dash.draw(n));
-    if (v === 'parlay') startLive(); else stopLive();
-  };
-  qa('[data-view]').forEach((b) => b.addEventListener('click', () => { showView(b.dataset.view); dash.setLink(b.dataset.view === 'games' ? 'top' : b.dataset.view); }));
-  if (h0 === 'parlay') showView(h0);
 })();
 </script>
 
