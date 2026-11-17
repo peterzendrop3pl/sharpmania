@@ -91,11 +91,6 @@ window.addEventListener('load', () => {
 .cb-bar-top { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); align-items: center; justify-content: space-between; }
 .cb-chips { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs); }
 .cb-chip, .cb-rchip, .cb-schip { font: inherit; font-size: var(--cds-font-size-caption); background: var(--color-bg); color: var(--color-fg); border: 1px solid var(--color-border-line); border-radius: 999px; padding: 0.25rem 0.75rem; cursor: pointer; }
-.cb-rpchip { font: inherit; font-size: var(--cds-font-size-caption); background: var(--color-bg); color: var(--color-fg); border: 1px solid var(--color-border-line); border-radius: 999px; padding: 0.25rem 0.75rem; cursor: pointer; }
-.cb-rpchip[aria-pressed="true"] { background: var(--color-fg); color: var(--color-bg); border-color: var(--color-fg); }
-.cb-table tr.cb-clickrow { cursor: pointer; }
-.cb-table tr.cb-clickrow:hover td { background: color-mix(in srgb, var(--color-fg) 6%, transparent); }
-.cb-tabs { margin-top: var(--cds-gap-sm); }
 .cb-chip[aria-pressed="true"], .cb-rchip[aria-pressed="true"], .cb-schip[aria-pressed="true"] { background: var(--color-fg); color: var(--color-bg); border-color: var(--color-fg); }
 .cb-scroll { overflow: auto; max-height: 36rem; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); }
 .cb-table { border-collapse: collapse; width: 100%; min-width: 60rem; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
@@ -282,59 +277,23 @@ window.addEventListener('load', () => {
     <h1 id="top">Sharpmania</h1>
     <p class="cb-meta"><span data-draw="v" data-source="games" data-row="0" data-field="day_label">—</span> · KenPom's predictions against Vegas lines and where the money is going</p>
 
-    <p class="cb-take"><b>New rules today:</b> <b data-draw="v" data-source="summary" data-row="0" data-field="rs_picks">—</b> spread picks (<b data-draw="v" data-source="summary" data-row="0" data-field="rs_high">—</b> in the Both tier) and <b data-draw="v" data-source="summary" data-row="0" data-field="rt_picks">—</b> Under total picks. They show in the list as "New rule".</p>
+    <p class="cb-take"><b>New rules today:</b> <b data-draw="v" data-source="summary" data-row="0" data-field="rs_picks">—</b> spread picks (<b data-draw="v" data-source="summary" data-row="0" data-field="rs_high">—</b> in the Both tier) and <b data-draw="v" data-source="summary" data-row="0" data-field="rt_picks">—</b> Under total picks. To see just those games, pick "New rules" under Market.</p>
     <p class="cb-take"><b data-draw="v" data-source="summary" data-row="0" data-field="sharp_games">—</b> of <b data-draw="v" data-source="summary" data-row="0" data-field="games">—</b> games have a sharp pick today: <b data-draw="v" data-source="summary" data-row="0" data-field="sharp_picks">—</b> picks in all, <b data-draw="v" data-source="summary" data-row="0" data-field="all_three_picks">—</b> of them lining up on all three checks.</p>
   </header>
-
-  <div class="cb-tabs" role="tablist" aria-label="Views">
-    <button class="cb-tab" type="button" role="tab" data-view="games" aria-selected="true">All games</button>
-    <button class="cb-tab" type="button" role="tab" data-view="rules" aria-selected="false">New rule picks <span class="cb-count" data-draw="v" data-source="summary" data-row="0" data-field="rule_total">—</span></button>
-  </div>
   <div data-viewpane="games">
 
   <section class="cb-app" aria-label="Games and detail">
     <aside class="cb-side" aria-label="Games">
       <div class="cb-side-top">
         <div class="cb-side-lab">Market</div>
-        <div class="cb-chips" role="group" aria-label="Market"><button class="cb-fchip" type="button" data-k="mkt" data-v="all" aria-pressed="true">All</button><button class="cb-fchip" type="button" data-k="mkt" data-v="sp" aria-pressed="false">Spread</button><button class="cb-fchip" type="button" data-k="mkt" data-v="tot" aria-pressed="false">Total</button><button class="cb-fchip" type="button" data-k="mkt" data-v="ml" aria-pressed="false">Money line</button></div>
+        <div class="cb-chips" role="group" aria-label="Market"><button class="cb-fchip" type="button" data-k="mkt" data-v="all" aria-pressed="true">All</button><button class="cb-fchip" type="button" data-k="mkt" data-v="sp" aria-pressed="false">Spread</button><button class="cb-fchip" type="button" data-k="mkt" data-v="tot" aria-pressed="false">Total</button><button class="cb-fchip" type="button" data-k="mkt" data-v="ml" aria-pressed="false">Money line</button><button class="cb-fchip" type="button" data-k="mkt" data-v="rule" aria-pressed="false">New rules</button></div>
         <div class="cb-chips" role="group" aria-label="Sort and filter"><button class="cb-fchip" type="button" data-k="sort" data-v="grade" aria-pressed="true">By grade</button><button class="cb-fchip" type="button" data-k="sort" data-v="time" aria-pressed="false">By time</button><button class="cb-fchip" type="button" data-k="sharp" aria-pressed="false">Sharp picks only</button></div>
-        <div class="cb-note">Every game, best grade first. The tags under a game check its top spread or total pick: <b>Pinnacle</b> (its own line moved toward the pick), <b>Circa</b> (its splits show the same side sharp) and <b>Scatter</b> (how the two teams match up on shooting, turnovers, rebounds and free throws, from CBB Analytics). ✓ agrees, ✗ disagrees, – no read. Click a game for all of it on one page.</div>
+        <div class="cb-note">Every game, best grade first. The tags under a game check its top spread or total pick: <b>Pinnacle</b> (its own line moved toward the pick), <b>Circa</b> (its splits show the same side sharp) and <b>Scatter</b> (how the two teams match up on shooting, turnovers, rebounds and free throws, from CBB Analytics). ✓ agrees, ✗ disagrees, – no read. Click a game for all of it on one page. <b>New rules</b> lists only the games with a Spread-rule or Under-rule pick, Both-tier first, with the tier on the right (Both, Dog = underdog only, KP = KenPom only, U = Under only).</div>
       </div>
       <div class="cb-list" data-draw="list" data-source="games"></div>
     </aside>
     <section class="cb-main" data-draw="detail" data-source="games" aria-live="polite"></section>
   </section>
-  </div>
-  <div data-viewpane="rules" hidden>
-
-    <section class="cb-pane" aria-label="New rule picks">
-      <p class="cb-def">Every pick from the two tracked rules on today's slate. The Spread rule takes a side with 40% or fewer of the tickets that is an underdog of 6 or more points, or one KenPom says covers by 0 to 3; it is graded by tier (Both reasons is the one to watch). The Total rule is the Under when 60% or more of the tickets are on the Under. Both are unproven: they were found in Nov 7 to 14 games, so only days after that are a fair test. Tickets and handle are for the side picked; Line shows the open and the current number. Not betting advice.</p>
-      <div class="cb-chips" role="group" aria-label="Filter picks">
-        <button class="cb-rpchip" type="button" data-rf="all" aria-pressed="true">All picks</button>
-        <button class="cb-rpchip" type="button" data-rf="both" aria-pressed="false">Both tier only</button>
-        <button class="cb-rpchip" type="button" data-rf="sp" aria-pressed="false">Spread</button>
-        <button class="cb-rpchip" type="button" data-rf="tot" aria-pressed="false">Total (Under)</button>
-      </div>
-      <p class="cb-note" id="rp-note"></p>
-      <div class="cb-scroll">
-        <table class="cb-table" data-source="rule_picks" data-row-key="key">
-          <thead>
-            <tr>
-              <th data-field="time">Time</th>
-              <th data-field="game">Game</th>
-              <th data-field="rule">Rule</th>
-              <th data-field="pick">Pick</th>
-              <th data-field="tier">Tier</th>
-              <th data-field="tickets">Tickets</th>
-              <th data-field="handle">Handle</th>
-              <th data-field="line">Line</th>
-              <th data-field="result">Result</th>
-            </tr>
-          </thead>
-          <tbody data-draw="rulepicks"></tbody>
-        </table>
-      </div>
-    </section>
   </div>
   <details class="cb-dd cb-top" id="results"><summary><span class="cb-sum-text"><span class="cb-sum-title">How we're doing</span><span class="cb-sum-sub">Graded results so far</span></span><span class="cb-sum-badges"><span class="cb-badge"><b data-draw="v" data-source="kp_acc" data-row="0" data-field="games">—</b> games graded</span><span class="cb-badge"><b data-draw="v" data-source="kp_acc" data-row="0" data-field="days">—</b> days</span></span></summary><div class="cb-dd-body">
     <p class="cb-empty" id="results-empty" hidden>Nothing has been graded yet. Results show up here after the first screened games finish and the screen is graded.</p>
@@ -665,8 +624,7 @@ window.addEventListener('load', () => {
         strong_games: all.filter((p) => p[0] && p[0].grade >= 7).length,
         rs_picks: games.filter((g) => g.rs_pick).length,
         rs_high: games.filter((g) => g.rs_pick && g.rs_tier === 'Both').length,
-        rt_picks: games.filter((g) => g.rt_pick).length,
-        rule_total: games.filter((g) => g.rs_pick).length + games.filter((g) => g.rt_pick).length
+        rt_picks: games.filter((g) => g.rt_pick).length
       }];
     }
   });
@@ -694,16 +652,20 @@ window.addEventListener('load', () => {
   openTo(h0);
 
   // ---- Left: every game with its grade.
+  // Market > New rules: only games with a Spread-rule or Total-rule pick, best Spread tier first (Both, Underdog, KenPom), then Under-only games.
+  const RULE_RANK = { Both: 0, Underdog: 1, KenPom: 2 }, RULE_SHORT = { Both: 'Both', Underdog: 'Dog', KenPom: 'KP' };
+  const ruleRank = (r) => (r.rs_pick ? (RULE_RANK[r.rs_tier] == null ? 3 : RULE_RANK[r.rs_tier]) : 4);
   const visible = () => rowsOf('games').map((r) => {
     const all = picksOf(r);
-    const picks = ui.mkt === 'all' ? all : all.filter((p) => p.m === ui.mkt);
+    const picks = ui.mkt === 'all' || ui.mkt === 'rule' ? all : all.filter((p) => p.m === ui.mkt);
     return { r, all, picks };
-  }).filter((x) => !ui.sharp || x.picks.length)
-    .sort((a, b) => (ui.sort === 'grade' ? ((b.picks[0] ? b.picks[0].grade : -1) - (a.picks[0] ? a.picks[0].grade : -1)) : 0) || a.r.tip_sort - b.r.tip_sort || a.r.game.localeCompare(b.r.game));
+  }).filter((x) => ui.mkt !== 'rule' || x.r.rs_pick || x.r.rt_pick)
+    .filter((x) => ui.mkt === 'rule' || !ui.sharp || x.picks.length)
+    .sort((a, b) => (ui.mkt === 'rule' ? (ui.sort === 'grade' ? ruleRank(a.r) - ruleRank(b.r) : 0) : (ui.sort === 'grade' ? ((b.picks[0] ? b.picks[0].grade : -1) - (a.picks[0] ? a.picks[0].grade : -1)) : 0)) || a.r.tip_sort - b.r.tip_sort || a.r.game.localeCompare(b.r.game));
   dash.draw('list', (el) => {
     const items = visible();
-    if (!items.length) { el.replaceChildren(mk('p', 'cb-empty-card', ui.sharp ? 'No sharp picks here right now. Turn off "Sharp picks only" to see every game.' : 'No games.')); return; }
-    if (!ui.sel || !items.some((x) => x.r.game_id === ui.sel)) { if (!ui.sel || !rowsOf('games').some((g) => g.game_id === ui.sel)) ui.sel = items[0].r.game_id; }
+    if (!items.length) { el.replaceChildren(mk('p', 'cb-empty-card', ui.sharp ? 'No sharp picks here right now. Turn off "Sharp picks only" to see every game.' : (ui.mkt === 'rule' ? 'No new-rule picks on this slate.' : 'No games.'))); return; }
+    if (!ui.sel || !items.some((x) => x.r.game_id === ui.sel)) ui.sel = items[0].r.game_id;
     const day = (rowsOf('games')[0] || {}).day_label || '';
     const head = mk('div', 'cb-listhead'); head.append(mk('span', '', day.replace(/, \d{4}$/, '')), mk('span', '', items.length + (items.length === 1 ? ' game' : ' games')));
     el.replaceChildren(head, ...items.map(({ r, picks }) => {
@@ -712,12 +674,13 @@ window.addEventListener('load', () => {
       const main = mk('div', 'cb-item-main');
       main.append(mk('div', 'cb-item-name', r.game));
       const top = picks[0];
-      main.append(mk('div', 'cb-item-sub', top ? top.name + ' · ' + sideOf(r, top.p) + (picks.length > 1 ? ' (+' + (picks.length - 1) + ' more)' : '') : 'No sharp pick'));
+      if (ui.mkt !== 'rule') main.append(mk('div', 'cb-item-sub', top ? top.name + ' · ' + sideOf(r, top.p) + (picks.length > 1 ? ' (+' + (picks.length - 1) + ' more)' : '') : 'No sharp pick'));
       if (r.rs_pick || r.rt_pick) main.append(mk('div', 'cb-item-sub cb-newrule', 'New rule: ' + [r.rs_pick ? 'Spread ' + r.rs_text + ' · ' + ({ Both: 'both reasons', Underdog: 'underdog only', KenPom: 'KenPom only' }[r.rs_tier] || r.rs_tier) : '', r.rt_pick ? 'Under tickets ' + r.rt_tier : ''].filter(Boolean).join(' · ')));
       const cp = picks.find((p) => p.m === 'sp' || p.m === 'tot'), ctok = cp ? tokOf(r, cp.m, stSide(r, cp)) : null;
       if (ctok) { const tr = mk('div', 'cb-mtags'); for (const [nm, v] of checksOf(r, cp.m, ctok)) { const s = mk('span', 'cb-mtag ' + v.k, nm + ' ' + v.s); s.title = v.t; s.setAttribute('aria-label', v.t); tr.append(s); } main.append(tr); }
       const g = top ? top.grade : null;
-      b.append(mk('span', 'cb-time', r.tip_et), main, mk('span', 'cb-gr ' + (g ? tone(g) : ''), g ? String(g) : '–'));
+      if (ui.mkt === 'rule') b.append(mk('span', 'cb-time', r.tip_et), main, mk('span', 'cb-gr ' + (r.rs_pick && r.rs_tier === 'Both' ? 'strong' : ''), r.rs_pick ? (RULE_SHORT[r.rs_tier] || r.rs_tier) : 'U'));
+      else b.append(mk('span', 'cb-time', r.tip_et), main, mk('span', 'cb-gr ' + (g ? tone(g) : ''), g ? String(g) : '–'));
       b.addEventListener('click', () => { ui.sel = r.game_id; dash.setLink('game-' + r.game_id); dash.draw('list'); dash.draw('detail'); if (window.innerWidth <= 860) q('.cb-main').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
       return b;
     }));
@@ -1468,66 +1431,6 @@ window.addEventListener('load', () => {
       const tr = mk('tr', r.tone === 'sharp' ? 'cb-three' : ''); tr.dataset.key = r.date;
       tr.append(...['day', 'verdict', 'ticket', 'sharp', 'favs', 'overs', 'orig', 'rules'].map((f) =>
         mk('td', f === 'day' ? 'cb-game' : f === 'verdict' ? (r.tone === 'sharp' ? 'cb-st-ok' : r.tone === 'square' ? 'cb-st-bad' : 'cb-st-mute') : '', String(r[f]))));
-      return tr;
-    }));
-  });
-  // ---- Top tabs: All games, and every new-rule pick of the day in one table.
-  dash.calc('rule_picks', {
-    inputs: ['games', 'results'],
-    title: 'New rule picks',
-    description: "Every Spread rule and Under total rule pick on the day's slate, best tier first, with its result once graded.",
-    fn: (games, results) => {
-      const done = {};
-      for (const r of results) if (r.cat === 'rule') done[r.game_id + '|' + r.market] = r;
-      const TIER = { Both: 'Both reasons', Underdog: 'Underdog only', KenPom: 'KenPom only' };
-      const ORDER = { Both: 0, Underdog: 1, KenPom: 2 };
-      const nz = (v) => (v == null || v === '' ? '–' : v + '%');
-      const mv = (o, n) => (o == null || o === '' || n == null || n === '' ? '–' : (o > 0 ? '+' : '') + o + ' to ' + (n > 0 ? '+' : '') + n);
-      const out = [];
-      for (const g of games) {
-        if (g.rs_pick) {
-          const s = g.rs_side, res = done[g.game_id + '|sp'];
-          out.push({ key: g.game_id + '|sp', game_id: g.game_id, kind: 'sp', order: ORDER[g.rs_tier] == null ? 3 : ORDER[g.rs_tier], tip: g.tip_sort, time: g.tip_et, game: g.game, rule: 'Spread', pick: g.rs_text, tier: TIER[g.rs_tier] || g.rs_tier,
-            tickets: nz(g['raw_' + s + '_sb']), handle: nz(g['raw_' + s + '_sh']), line: mv(g['raw_' + s + '_sp_open'], g['raw_' + s + '_sp']),
-            result: res ? res.result + ' · ' + res.final : '–', rtone: res ? res.result : '' });
-        }
-        if (g.rt_pick) {
-          const res = done[g.game_id + '|tot'];
-          out.push({ key: g.game_id + '|tot', game_id: g.game_id, kind: 'tot', order: 4, tip: g.tip_sort, time: g.tip_et, game: g.game, rule: 'Total', pick: g.rt_text, tier: 'Tickets ' + g.rt_tier,
-            tickets: nz(g.raw_over_b == null || g.raw_over_b === '' ? null : 100 - g.raw_over_b), handle: nz(g.raw_over_h == null || g.raw_over_h === '' ? null : 100 - g.raw_over_h), line: mv(g.total_open, g.total_now),
-            result: res ? res.result + ' · ' + res.final : '–', rtone: res ? res.result : '' });
-        }
-      }
-      return out.sort((a, b) => a.order - b.order || a.tip - b.tip || a.game.localeCompare(b.game));
-    }
-  });
-  const rp = { f: 'all' };
-  const setView = (v) => {
-    qa('[data-viewpane]').forEach((p) => { p.hidden = p.dataset.viewpane !== v; });
-    qa('.cb-tab[data-view]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.view === v)));
-    dash.setLink(v === 'rules' ? 'picks' : 'top');
-    if (v === 'rules') dash.draw('rulepicks'); else { dash.draw('list'); dash.draw('detail'); }
-  };
-  qa('.cb-tab[data-view]').forEach((b) => b.addEventListener('click', () => setView(b.dataset.view)));
-  if (h0 === 'picks') setView('rules');
-  qa('.cb-rpchip').forEach((b) => b.addEventListener('click', () => {
-    rp.f = b.dataset.rf;
-    qa('.cb-rpchip').forEach((o) => o.setAttribute('aria-pressed', String(o === b)));
-    dash.draw('rulepicks');
-  }));
-  dash.draw('rulepicks', (tbody) => {
-    const d = dash.data('rule_picks'), all = d.status === 'ok' ? d.data : [];
-    const rows = all.filter((r) => rp.f === 'all' || (rp.f === 'both' ? r.order === 0 : r.kind === rp.f));
-    const note = q('#rp-note');
-    if (note) note.textContent = rows.length + (rows.length === 1 ? ' pick' : ' picks') + (rp.f === 'all' ? '' : ' shown of ' + all.length) + '. Click a row to open that game.';
-    if (!rows.length) {
-      const tr = mk('tr'), td = mk('td', 'cb-st-mute', 'No picks here.'); td.colSpan = 9; tr.append(td); tbody.replaceChildren(tr); return;
-    }
-    tbody.replaceChildren(...rows.map((r) => {
-      const tr = mk('tr', 'cb-clickrow' + (r.order === 0 ? ' cb-three' : '')); tr.dataset.key = r.key;
-      tr.append(...['time', 'game', 'rule', 'pick', 'tier', 'tickets', 'handle', 'line', 'result'].map((f) =>
-        mk('td', f === 'game' ? 'cb-game' : f === 'result' ? (r.rtone === 'W' ? 'cb-st-ok' : r.rtone === 'L' ? 'cb-st-bad' : 'cb-st-mute') : f === 'tier' && r.order === 0 ? 'cb-st-ok' : '', String(r[f]))));
-      tr.addEventListener('click', () => { ui.sel = r.game_id; setView('games'); dash.setLink('game-' + r.game_id); window.scrollTo(0, 0); });
       return tr;
     }));
   });
