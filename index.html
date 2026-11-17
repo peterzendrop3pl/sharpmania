@@ -268,6 +268,31 @@ window.addEventListener('load', () => {
 .cb-chk.ok { background: color-mix(in srgb, var(--color-ok) 12%, transparent); box-shadow: inset 3px 0 0 var(--color-ok); }
 .cb-chk.bad { background: color-mix(in srgb, var(--color-bad) 10%, transparent); box-shadow: inset 3px 0 0 var(--color-bad); }
 .cb-chk.base { box-shadow: inset 3px 0 0 var(--color-fg); }
+/* Sportsbook skin (Nov 17): dark navy, neon-green accent, bold sans headings. Tokens are set on .cb so they win over the host theme. */
+.cb { --color-fg: #eef2f8; --color-fg-muted: #8d9ab0; --color-bg: #080c14; --color-panel: #111827; --color-border-line: #1f2a3d; --color-ok: #2fe27a; --color-warn: #ffb81c; --color-bad: #ff5468;
+  --sb-accent: #2fe27a; --sb-ink: #04210f; --sb-card2: #0d1422; color: var(--color-fg); }
+html, body { background: #080c14 !important; color-scheme: dark; }
+.cb h1 { font-family: var(--font-anthropic-sans); font-weight: 800; letter-spacing: -0.03em; font-size: 2.1rem; }
+.cb h1::after { content: ""; display: block; width: 3.5rem; height: 4px; margin-top: 0.55rem; border-radius: 2px; background: var(--sb-accent); }
+.cb-hd-title, .cb-big, .cb-legscore { font-family: var(--font-anthropic-sans); font-weight: 800; letter-spacing: -0.02em; }
+.cb-top > summary .cb-sum-title { font-family: var(--font-anthropic-sans); font-weight: 800; letter-spacing: -0.01em; }
+.cb-side, .cb-card, .cb-dd, .cb-tile { background: var(--color-panel); border-color: var(--color-border-line); }
+.cb-market, .cb-leaf, .cb-sub-dd, .cb-pickcard { background: var(--sb-card2); }
+.cb-card h3, .cb-side-lab, .cb-listhead { letter-spacing: 0.1em; }
+.cb-fchip, .cb-chip, .cb-rchip, .cb-schip, .cb-pchip { background: var(--sb-card2); }
+.cb-fchip[aria-pressed="true"], .cb-chip[aria-pressed="true"], .cb-rchip[aria-pressed="true"], .cb-schip[aria-pressed="true"], .cb-pchip[aria-pressed="true"], .cb-cat[aria-pressed="true"] { background: var(--sb-accent); color: var(--sb-ink); border-color: var(--sb-accent); font-weight: 700; }
+.cb-item:hover { background: var(--sb-card2); }
+.cb-item[aria-current="true"] { background: var(--sb-card2); border-color: var(--sb-accent); box-shadow: inset 3px 0 0 var(--sb-accent); }
+.cb-gr.strong { background: var(--sb-accent); color: var(--sb-ink); border-color: var(--sb-accent); font-weight: 800; }
+.cb-gr.mid { background: color-mix(in srgb, var(--color-warn) 16%, transparent); }
+.cb-pill.ok { background: color-mix(in srgb, var(--sb-accent) 16%, transparent); }
+.cb-pickcard.three { border-color: var(--sb-accent); box-shadow: 0 0 0 1px color-mix(in srgb, var(--sb-accent) 35%, transparent); }
+.cb-table th { background: var(--sb-card2); text-transform: uppercase; font-size: 0.68rem; letter-spacing: 0.07em; color: var(--color-fg-muted); }
+.cb-table tr.cb-three td { background: color-mix(in srgb, var(--sb-accent) 9%, transparent); }
+.cb-scroll { border-color: var(--color-border-line); }
+.cb-tile-key { border-color: var(--sb-accent); }
+.cb-item-sub.cb-newrule { color: var(--sb-accent); }
+.cb-chk.ok { background: color-mix(in srgb, var(--sb-accent) 12%, transparent); box-shadow: inset 3px 0 0 var(--sb-accent); }
 </style>
 
 
